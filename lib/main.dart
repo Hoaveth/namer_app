@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GeneratorPage();
         break;
       case 1:
-        page = Placeholder();
+        page = FavoritesPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -167,6 +167,30 @@ class WordCard extends StatelessWidget {
           semanticsLabel: "${word.first} ${word.second}",
         ),
       ),
+    );
+  }
+}
+
+class FavoritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    var favoriteWords = appState.favoriteWords;
+
+    if (favoriteWords.isEmpty) {
+      return Center(
+        child: Text('No favorites yet.'),
+      );
+    }
+
+    return ListView(
+      children: [
+        Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text('You have ' '${favoriteWords.length} favorites:')),
+        for (var pair in favoriteWords)
+          ListTile(leading: Icon(Icons.favorite), title: Text(pair.asLowerCase))
+      ],
     );
   }
 }
