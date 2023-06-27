@@ -26,8 +26,19 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var currentWord = WordPair.random();
 
+  var favoriteWords = <WordPair>[];
+
   void generateWord() {
     currentWord = WordPair.random();
+    notifyListeners();
+  }
+
+  void addFavoriteWord() {
+    if (favoriteWords.contains(currentWord)) {
+      favoriteWords.remove(currentWord);
+    } else {
+      favoriteWords.add(currentWord);
+    }
     notifyListeners();
   }
 }
@@ -37,14 +48,40 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var word = appState.currentWord;
+    var favoriteWords = appState.favoriteWords;
+
+    IconData icon;
+
+    if (favoriteWords.contains(word)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
 
     return Scaffold(
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           WordCard(word: word),
           SizedBox(height: 20),
-          ElevatedButton(
-              onPressed: () => appState.generateWord(), child: Text("Generate"))
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                  icon: Icon(icon),
+                  onPressed: () {
+                    appState.addFavoriteWord();
+
+                    Future.delayed(Duration(milliseconds: 600), () {
+                      appState.generateWord();
+                    });
+                  },
+                  label: Text("Like")),
+              SizedBox(width: 20),
+              ElevatedButton(
+                  onPressed: () => appState.generateWord(),
+                  child: Text("Generate"))
+            ],
+          ),
         ]),
       ),
     );
